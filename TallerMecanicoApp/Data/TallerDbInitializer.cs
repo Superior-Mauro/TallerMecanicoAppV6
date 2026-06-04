@@ -21,6 +21,9 @@ public static class TallerDbInitializer
 
         using var conexion = new SqlConnection(cadenaCompleta);
         conexion.Open();
+
+        // Ejecución de scripts automáticos
+        EjecutarScript(conexion, ScriptUsuarios); // <-- SE AGREGA LA TABLA DE LOGINS AQUÍ
         EjecutarScript(conexion, ScriptVehiculos);
         EjecutarScript(conexion, ScriptTrabajos);
         EjecutarScript(conexion, ScriptColumnasAdicionales);
@@ -49,8 +52,30 @@ public static class TallerDbInitializer
         comando.ExecuteNonQuery();
     }
 
-    private const string ScriptVehiculos =
+    // ==========================================
+    // SCRIPT NUEVO: TABLA DE USUARIOS
+    // ==========================================
+    private const string ScriptUsuarios =
         """
+        IF OBJECT_ID(N'dbo.Usuarios', N'U') IS NULL
+        BEGIN
+            CREATE TABLE dbo.Usuarios
+            (
+                Id            INT IDENTITY(1, 1) NOT NULL CONSTRAINT PK_Usuarios PRIMARY KEY,
+                Nombres       NVARCHAR(150)      NOT NULL,
+                NombreUsuario NVARCHAR(50)       NOT NULL,
+                Contrasena    NVARCHAR(100)      NOT NULL,
+                FechaRegistro DATETIME2(0)       NOT NULL CONSTRAINT DF_Usuarios_FechaRegistro DEFAULT (SYSUTCDATETIME()),
+                CONSTRAINT UQ_Usuarios_NombreUsuario UNIQUE (NombreUsuario)
+            );
+        END
+        """;
+
+    // ==========================================
+    // SCRIPTS EXISTENTES
+    // ==========================================
+    private const string ScriptVehiculos =
+            """
         IF OBJECT_ID(N'dbo.Vehiculos', N'U') IS NULL
         BEGIN
             CREATE TABLE dbo.Vehiculos
@@ -60,15 +85,15 @@ public static class TallerDbInitializer
                 Cliente       NVARCHAR(120)      NOT NULL,
                 Telefono      NVARCHAR(20)       NOT NULL CONSTRAINT DF_Vehiculos_Telefono DEFAULT (N''),
                 Modelo        NVARCHAR(80)       NOT NULL,
-                Problema      NVARCHAR(500)      NOT NULL,
+                Dni           NVARCHAR(15)       NOT NULL CONSTRAINT DF_Vehiculos_Dni DEFAULT (N''),
                 FechaRegistro DATETIME2(0)       NOT NULL CONSTRAINT DF_Vehiculos_FechaRegistro DEFAULT (SYSUTCDATETIME()),
                 CONSTRAINT UQ_Vehiculos_Placa UNIQUE (Placa)
             );
         END
         """;
 
-    private const string ScriptTrabajos =
-        """
+        private const string ScriptTrabajos =
+            """
         IF OBJECT_ID(N'dbo.Trabajos', N'U') IS NULL
         BEGIN
             CREATE TABLE dbo.Trabajos
@@ -86,8 +111,9 @@ public static class TallerDbInitializer
                 CambioBujias          BIT                NOT NULL,
                 TotalPagar            DECIMAL(10, 2)     NOT NULL,
                 TiempoEstimadoMinutos INT                NOT NULL,
-                FechaRegistro         DATETIME2(0)       NOT NULL CONSTRAINT DF_Trabajos_FechaRegistro DEFAULT (SYSUTCDATETIME()),
-                CONSTRAINT FK_Trabajos_Vehiculos FOREIGN KEY (Placa) REFERENCES dbo.Vehiculos (Placa)
+                FechaRegistro         DATETIME2(0)       NOT NULL CONSTRAINT DF_Trabajos_FechaRegistro DEFAULT (SYSDATETIME()),
+                
+                CONSTRAINT FK_Trabajos_Vehiculos FOREIGN KEY (Placa) REFERENCES dbo.Vehiculos (Placa) ON DELETE CASCADE
             );
         END
         """;

@@ -28,14 +28,17 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
+        System.Windows.Forms.DataGridViewCellStyle DataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+
+        colTelefono = new DataGridViewTextBoxColumn();
         lblTitulo = new Label();
         gbRecepcion = new GroupBox();
-        txtProblema = new TextBox();
+        txtDni = new TextBox();
         txtModelo = new TextBox();
         txtTelefono = new TextBox();
         txtCliente = new TextBox();
         txtPlaca = new TextBox();
-        lblProblema = new Label();
+        lblDni = new Label();
         lblModelo = new Label();
         lblTelefono = new Label();
         lblCliente = new Label();
@@ -46,7 +49,17 @@ partial class Form1
         colPlaca = new DataGridViewTextBoxColumn();
         colCliente = new DataGridViewTextBoxColumn();
         colModelo = new DataGridViewTextBoxColumn();
-        colProblema = new DataGridViewTextBoxColumn();
+        colDni = new DataGridViewTextBoxColumn();
+        colFechaRegistro = new DataGridViewTextBoxColumn();
+
+        // DECLARACIÓN DE TUS BOTONES SUPERIORES NUEVOS
+        btnUpdate = new Button();
+        btnDelete = new Button();
+
+        // INSTANCIAMOS EL NUEVO BUSCADOR
+        lblBuscar = new Label();
+        txtBuscar = new TextBox();
+
         gbRecepcion.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)dgvVehiculos).BeginInit();
         SuspendLayout();
@@ -63,16 +76,20 @@ partial class Form1
         // 
         // gbRecepcion
         // 
-        gbRecepcion.Controls.Add(txtProblema);
+        gbRecepcion.Controls.Add(txtDni);
         gbRecepcion.Controls.Add(txtModelo);
         gbRecepcion.Controls.Add(txtTelefono);
         gbRecepcion.Controls.Add(txtCliente);
         gbRecepcion.Controls.Add(txtPlaca);
-        gbRecepcion.Controls.Add(lblProblema);
+        gbRecepcion.Controls.Add(lblDni);
         gbRecepcion.Controls.Add(lblModelo);
         gbRecepcion.Controls.Add(lblTelefono);
         gbRecepcion.Controls.Add(lblCliente);
         gbRecepcion.Controls.Add(lblPlaca);
+
+        gbRecepcion.Controls.Add(lblBuscar);
+        gbRecepcion.Controls.Add(txtBuscar);
+
         gbRecepcion.Location = new Point(24, 56);
         gbRecepcion.Name = "gbRecepcion";
         gbRecepcion.Size = new Size(845, 150);
@@ -80,12 +97,13 @@ partial class Form1
         gbRecepcion.TabStop = false;
         gbRecepcion.Text = "Datos de ingreso";
         // 
-        // txtProblema
+        // txtDni
         // 
-        txtProblema.Location = new Point(92, 110);
-        txtProblema.Name = "txtProblema";
-        txtProblema.Size = new Size(734, 23);
-        txtProblema.TabIndex = 7;
+        txtDni.Location = new Point(544, 110);
+        txtDni.MaxLength = 8;
+        txtDni.Name = "txtDni";
+        txtDni.Size = new Size(282, 23);
+        txtDni.TabIndex = 9;
         // 
         // txtModelo
         // 
@@ -93,6 +111,14 @@ partial class Form1
         txtModelo.Name = "txtModelo";
         txtModelo.Size = new Size(282, 23);
         txtModelo.TabIndex = 6;
+        // 
+        // txtBuscar
+        // 
+        txtBuscar.CharacterCasing = CharacterCasing.Upper;
+        txtBuscar.Location = new Point(115, 110); // Posicionado exactamente debajo de Marca/Modelo
+        txtBuscar.Name = "txtBuscar";
+        txtBuscar.Size = new Size(259, 23);
+        txtBuscar.TabIndex = 12;
         // 
         // txtTelefono
         // 
@@ -117,14 +143,14 @@ partial class Form1
         txtPlaca.Size = new Size(282, 23);
         txtPlaca.TabIndex = 4;
         // 
-        // lblProblema
+        // lblDni
         // 
-        lblProblema.AutoSize = true;
-        lblProblema.Location = new Point(24, 113);
-        lblProblema.Name = "lblProblema";
-        lblProblema.Size = new Size(61, 15);
-        lblProblema.TabIndex = 3;
-        lblProblema.Text = "Problema:";
+        lblDni.AutoSize = true;
+        lblDni.Location = new Point(470, 113);
+        lblDni.Name = "lblDni";
+        lblDni.Size = new Size(30, 15);
+        lblDni.TabIndex = 3;
+        lblDni.Text = "DNI:";
         // 
         // lblModelo
         // 
@@ -134,6 +160,17 @@ partial class Form1
         lblModelo.Size = new Size(95, 15);
         lblModelo.TabIndex = 2;
         lblModelo.Text = "Marca / Modelo:";
+        // 
+        // lblBuscar
+        // 
+        lblBuscar.AutoSize = true;
+        lblBuscar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        lblBuscar.ForeColor = Color.Blue; // Color azul para diferenciar que es un buscador
+        lblBuscar.Location = new Point(54, 113);
+        lblBuscar.Name = "lblBuscar";
+        lblBuscar.Size = new Size(54, 15);
+        lblBuscar.TabIndex = 13;
+        lblBuscar.Text = "Buscar:";
         // 
         // lblTelefono
         // 
@@ -167,16 +204,38 @@ partial class Form1
         btnRegistrarVehiculo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
         btnRegistrarVehiculo.Location = new Point(24, 218);
         btnRegistrarVehiculo.Name = "btnRegistrarVehiculo";
-        btnRegistrarVehiculo.Size = new Size(147, 33);
+        btnRegistrarVehiculo.Size = new Size(130, 33);
         btnRegistrarVehiculo.TabIndex = 2;
         btnRegistrarVehiculo.Text = "Registrar vehículo";
         btnRegistrarVehiculo.UseVisualStyleBackColor = true;
         btnRegistrarVehiculo.Click += btnRegistrarVehiculo_Click;
         // 
+        // btnUpdate
+        // 
+        btnUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        btnUpdate.Location = new Point(165, 218);
+        btnUpdate.Name = "btnUpdate";
+        btnUpdate.Size = new Size(90, 33);
+        btnUpdate.TabIndex = 10;
+        btnUpdate.Text = "Update";
+        btnUpdate.UseVisualStyleBackColor = true;
+        btnUpdate.Click += btnUpdate_Click;
+        // 
+        // btnDelete
+        // 
+        btnDelete.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        btnDelete.Location = new Point(265, 218);
+        btnDelete.Name = "btnDelete";
+        btnDelete.Size = new Size(90, 33);
+        btnDelete.TabIndex = 11;
+        btnDelete.Text = "Delete";
+        btnDelete.UseVisualStyleBackColor = true;
+        btnDelete.Click += btnDelete_Click;
+        // 
         // btnRegistroTrabajos
         // 
         btnRegistroTrabajos.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-        btnRegistroTrabajos.Location = new Point(186, 218);
+        btnRegistroTrabajos.Location = new Point(365, 218);
         btnRegistroTrabajos.Name = "btnRegistroTrabajos";
         btnRegistroTrabajos.Size = new Size(147, 33);
         btnRegistroTrabajos.TabIndex = 3;
@@ -190,7 +249,7 @@ partial class Form1
         dgvVehiculos.AllowUserToDeleteRows = false;
         dgvVehiculos.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         dgvVehiculos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        dgvVehiculos.Columns.AddRange(new DataGridViewColumn[] { colPlaca, colCliente, colModelo, colProblema });
+        dgvVehiculos.Columns.AddRange(new DataGridViewColumn[] { colPlaca, colCliente, colTelefono, colModelo, colDni, colFechaRegistro });
         dgvVehiculos.Location = new Point(24, 265);
         dgvVehiculos.MultiSelect = false;
         dgvVehiculos.Name = "dgvVehiculos";
@@ -206,7 +265,7 @@ partial class Form1
         colPlaca.HeaderText = "Placa";
         colPlaca.Name = "colPlaca";
         colPlaca.ReadOnly = true;
-        colPlaca.Width = 120;
+        colPlaca.Width = 90;
         // 
         // colCliente
         // 
@@ -214,7 +273,15 @@ partial class Form1
         colCliente.HeaderText = "Cliente";
         colCliente.Name = "colCliente";
         colCliente.ReadOnly = true;
-        colCliente.Width = 220;
+        colCliente.Width = 180;
+        // 
+        // colTelefono
+        // 
+        colTelefono.DataPropertyName = "Telefono";
+        colTelefono.HeaderText = "Teléfono";
+        colTelefono.Name = "colTelefono";
+        colTelefono.ReadOnly = true;
+        colTelefono.Width = 110;
         // 
         // colModelo
         // 
@@ -222,21 +289,33 @@ partial class Form1
         colModelo.HeaderText = "Modelo";
         colModelo.Name = "colModelo";
         colModelo.ReadOnly = true;
-        colModelo.Width = 220;
+        colModelo.Width = 140;
         // 
-        // colProblema
+        // colDni
         // 
-        colProblema.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-        colProblema.DataPropertyName = "Problema";
-        colProblema.HeaderText = "Problema reportado";
-        colProblema.Name = "colProblema";
-        colProblema.ReadOnly = true;
+        colDni.DataPropertyName = "Dni";
+        colDni.HeaderText = "DNI Cliente";
+        colDni.Name = "colDni";
+        colDni.ReadOnly = true;
+        colDni.Width = 110;
+        // 
+        // colFechaRegistro
+        // 
+        colFechaRegistro.DataPropertyName = "FechaRegistro";
+        DataGridViewCellStyle1.Format = "dd/MM/yyyy hh:mm tt";
+        colFechaRegistro.DefaultCellStyle = DataGridViewCellStyle1;
+        colFechaRegistro.HeaderText = "Fecha de Ingreso";
+        colFechaRegistro.Name = "colFechaRegistro";
+        colFechaRegistro.ReadOnly = true;
+        colFechaRegistro.Width = 145;
         // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(892, 541);
+        Controls.Add(btnDelete);
+        Controls.Add(btnUpdate);
         Controls.Add(dgvVehiculos);
         Controls.Add(btnRegistroTrabajos);
         Controls.Add(btnRegistrarVehiculo);
@@ -245,7 +324,7 @@ partial class Form1
         MinimumSize = new Size(908, 580);
         Name = "Form1";
         StartPosition = FormStartPosition.CenterScreen;
-        Text = "Gestión de Taller Mecánico";
+        Text = "Gestión de Taller Mecánico - Mecha Prime";
         Load += Form1_Load;
         gbRecepcion.ResumeLayout(false);
         gbRecepcion.PerformLayout();
@@ -258,21 +337,30 @@ partial class Form1
 
     private Label lblTitulo;
     private GroupBox gbRecepcion;
-    private TextBox txtProblema;
+    private TextBox txtDni;
     private TextBox txtModelo;
     private TextBox txtTelefono;
     private TextBox txtCliente;
     private TextBox txtPlaca;
-    private Label lblProblema;
+    private Label lblDni;
     private Label lblModelo;
     private Label lblTelefono;
     private Label lblCliente;
     private Label lblPlaca;
     private Button btnRegistrarVehiculo;
+    private Button btnUpdate;
+    private Button btnDelete;
     private Button btnRegistroTrabajos;
     private DataGridView dgvVehiculos;
+
     private DataGridViewTextBoxColumn colPlaca;
     private DataGridViewTextBoxColumn colCliente;
     private DataGridViewTextBoxColumn colModelo;
-    private DataGridViewTextBoxColumn colProblema;
+    private DataGridViewTextBoxColumn colDni;
+    private DataGridViewTextBoxColumn colFechaRegistro;
+    private DataGridViewTextBoxColumn colTelefono;
+
+    // DECLARACIONES AL FINAL DE LAS VARIABLES DEL BUSCADOR
+    private Label lblBuscar;
+    private TextBox txtBuscar;
 }

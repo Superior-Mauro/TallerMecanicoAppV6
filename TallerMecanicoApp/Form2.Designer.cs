@@ -47,6 +47,10 @@ partial class Form2
         lblServicio = new Label();
         lblDescripcion = new Label();
         lblPlaca = new Label();
+        btnUpdateTrabajo = new Button();
+        btnDeleteTrabajo = new Button();
+        lblBuscarTrabajo = new Label();
+        txtBuscarTrabajo = new TextBox();
         dgvTrabajos = new DataGridView();
         colPlaca = new DataGridViewTextBoxColumn();
         colServicio = new DataGridViewTextBoxColumn();
@@ -89,6 +93,10 @@ partial class Form2
         gbRegistro.Controls.Add(lblServicio);
         gbRegistro.Controls.Add(lblDescripcion);
         gbRegistro.Controls.Add(lblPlaca);
+        gbRegistro.Controls.Add(btnUpdateTrabajo);
+        gbRegistro.Controls.Add(btnDeleteTrabajo);
+        gbRegistro.Controls.Add(lblBuscarTrabajo);
+        gbRegistro.Controls.Add(txtBuscarTrabajo);
         gbRegistro.Location = new Point(20, 56);
         gbRegistro.Name = "gbRegistro";
         gbRegistro.Size = new Size(1038, 230);
@@ -109,7 +117,7 @@ partial class Form2
         // 
         lblTiempoEstimado.AutoSize = true;
         lblTiempoEstimado.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-        lblTiempoEstimado.Location = new Point(714, 98);
+        lblTiempoEstimado.Location = new Point(730, 98);
         lblTiempoEstimado.Name = "lblTiempoEstimado";
         lblTiempoEstimado.Size = new Size(123, 15);
         lblTiempoEstimado.TabIndex = 13;
@@ -119,7 +127,7 @@ partial class Form2
         // 
         lblTotal.AutoSize = true;
         lblTotal.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-        lblTotal.Location = new Point(714, 71);
+        lblTotal.Location = new Point(730, 71);
         lblTotal.Name = "lblTotal";
         lblTotal.Size = new Size(76, 15);
         lblTotal.TabIndex = 12;
@@ -128,7 +136,7 @@ partial class Form2
         // chkBujias
         // 
         chkBujias.AutoSize = true;
-        chkBujias.Location = new Point(406, 127);
+        chkBujias.Location = new Point(445, 127);
         chkBujias.Name = "chkBujias";
         chkBujias.Size = new Size(240, 19);
         chkBujias.TabIndex = 11;
@@ -139,7 +147,7 @@ partial class Form2
         // chkLiquidoFrenos
         // 
         chkLiquidoFrenos.AutoSize = true;
-        chkLiquidoFrenos.Location = new Point(406, 99);
+        chkLiquidoFrenos.Location = new Point(445, 99);
         chkLiquidoFrenos.Name = "chkLiquidoFrenos";
         chkLiquidoFrenos.Size = new Size(223, 19);
         chkLiquidoFrenos.TabIndex = 10;
@@ -150,7 +158,7 @@ partial class Form2
         // chkRefrigerante
         // 
         chkRefrigerante.AutoSize = true;
-        chkRefrigerante.Location = new Point(406, 71);
+        chkRefrigerante.Location = new Point(445, 71);
         chkRefrigerante.Name = "chkRefrigerante";
         chkRefrigerante.Size = new Size(193, 19);
         chkRefrigerante.TabIndex = 9;
@@ -161,9 +169,9 @@ partial class Form2
         // btnRegistrarTrabajo
         // 
         btnRegistrarTrabajo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-        btnRegistrarTrabajo.Location = new Point(855, 173);
+        btnRegistrarTrabajo.Location = new Point(885, 68);
         btnRegistrarTrabajo.Name = "btnRegistrarTrabajo";
-        btnRegistrarTrabajo.Size = new Size(159, 33);
+        btnRegistrarTrabajo.Size = new Size(130, 30);
         btnRegistrarTrabajo.TabIndex = 8;
         btnRegistrarTrabajo.Text = "Registrar trabajo";
         btnRegistrarTrabajo.UseVisualStyleBackColor = true;
@@ -199,9 +207,9 @@ partial class Form2
         // 
         // txtDescripcion
         // 
-        txtDescripcion.Location = new Point(433, 32);
+        txtDescripcion.Location = new Point(445, 32);
         txtDescripcion.Name = "txtDescripcion";
-        txtDescripcion.Size = new Size(581, 23);
+        txtDescripcion.Size = new Size(569, 23);
         txtDescripcion.TabIndex = 5;
         // 
         // cbPlaca
@@ -257,6 +265,46 @@ partial class Form2
         lblPlaca.Size = new Size(38, 15);
         lblPlaca.TabIndex = 0;
         lblPlaca.Text = "Placa:";
+        // 
+        // btnUpdateTrabajo
+        // 
+        btnUpdateTrabajo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        btnUpdateTrabajo.Location = new Point(885, 104);
+        btnUpdateTrabajo.Name = "btnUpdateTrabajo";
+        btnUpdateTrabajo.Size = new Size(130, 30);
+        btnUpdateTrabajo.TabIndex = 17;
+        btnUpdateTrabajo.Text = "Update";
+        btnUpdateTrabajo.UseVisualStyleBackColor = true;
+        btnUpdateTrabajo.Click += btnUpdateTrabajo_Click;
+        // 
+        // btnDeleteTrabajo
+        // 
+        btnDeleteTrabajo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        btnDeleteTrabajo.Location = new Point(885, 140);
+        btnDeleteTrabajo.Name = "btnDeleteTrabajo";
+        btnDeleteTrabajo.Size = new Size(130, 30);
+        btnDeleteTrabajo.TabIndex = 18;
+        btnDeleteTrabajo.Text = "Delete";
+        btnDeleteTrabajo.UseVisualStyleBackColor = true;
+        btnDeleteTrabajo.Click += btnDeleteTrabajo_Click;
+        // 
+        // lblBuscarTrabajo
+        // 
+        lblBuscarTrabajo.AutoSize = true;
+        lblBuscarTrabajo.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        lblBuscarTrabajo.ForeColor = Color.Blue;
+        lblBuscarTrabajo.Location = new Point(44, 157);
+        lblBuscarTrabajo.Name = "lblBuscarTrabajo";
+        lblBuscarTrabajo.Size = new Size(47, 15);
+        lblBuscarTrabajo.TabIndex = 19;
+        lblBuscarTrabajo.Text = "Buscar:";
+        // 
+        // txtBuscarTrabajo
+        // 
+        txtBuscarTrabajo.Location = new Point(97, 157);
+        txtBuscarTrabajo.Name = "txtBuscarTrabajo";
+        txtBuscarTrabajo.Size = new Size(260, 23);
+        txtBuscarTrabajo.TabIndex = 20;
         // 
         // dgvTrabajos
         // 
@@ -386,4 +434,10 @@ partial class Form2
     private DataGridViewTextBoxColumn colAdicionales;
     private DataGridViewTextBoxColumn colTotal;
     private DataGridViewTextBoxColumn colTiempo;
+
+    // DEFINICIONES DE LOS NUEVOS CONTROLES
+    private Button btnUpdateTrabajo;
+    private Button btnDeleteTrabajo;
+    private Label lblBuscarTrabajo;
+    private TextBox txtBuscarTrabajo;
 }

@@ -67,3 +67,6 @@ C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\bin\Debug\net
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\bin\Debug\net10.0-windows\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMecanicoApp.csproj.AssemblyReference.cache
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMe.2F714B93.Up2Date
+C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMecanicoApp.FrmLogin.resources
+C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMecanicoApp.FrmNuevaCuenta.resources
+C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMecanicoApp.Properties.Resources.resources

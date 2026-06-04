@@ -5,11 +5,69 @@ namespace TallerMecanicoApp.Data;
 
 public sealed class TallerRepository
 {
+    // ==========================================
+    // MÉTODOS DE USUARIOS (LOGIN Y REGISTRO)
+    // ==========================================
+
+    public bool ValidarUsuario(string usuario, string contrasena)
+    {
+        const string sql =
+            """
+            SELECT COUNT(1)
+            FROM dbo.Usuarios
+            WHERE NombreUsuario = @usuario 
+              AND Contrasena = @contrasena;
+            """;
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.AddWithValue("@usuario", usuario);
+        comando.Parameters.AddWithValue("@contrasena", contrasena);
+
+        int resultado = Convert.ToInt32(comando.ExecuteScalar());
+        return resultado > 0;
+    }
+
+    public bool ExisteUsuario(string usuario)
+    {
+        const string sql =
+            """
+            SELECT 1
+            FROM dbo.Usuarios
+            WHERE NombreUsuario = @usuario;
+            """;
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.AddWithValue("@usuario", usuario);
+        return comando.ExecuteScalar() is not null;
+    }
+
+    public void RegistrarUsuario(string nombres, string usuario, string contrasena)
+    {
+        const string sql =
+            """
+            INSERT INTO dbo.Usuarios (Nombres, NombreUsuario, Contrasena)
+            VALUES (@nombres, @usuario, @contrasena);
+            """;
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.AddWithValue("@nombres", nombres);
+        comando.Parameters.AddWithValue("@usuario", usuario);
+        comando.Parameters.AddWithValue("@contrasena", contrasena);
+        comando.ExecuteNonQuery();
+    }
+
+    // ==========================================
+    // MÉTODOS DE VEHÍCULOS
+    // ==========================================
+
     public IReadOnlyList<Vehiculo> ObtenerVehiculos()
     {
         const string sql =
             """
-            SELECT Id, Placa, Cliente, Telefono, Modelo, Problema
+            SELECT Id, Placa, Cliente, Telefono, Modelo, Dni, FechaRegistro
             FROM dbo.Vehiculos
             ORDER BY FechaRegistro DESC, Id DESC;
             """;
@@ -22,13 +80,14 @@ public sealed class TallerRepository
 
         while (lector.Read())
         {
-            vehiculos.Add(new Vehiculo(
-                lector.GetInt32(0),
-                lector.GetString(1),
-                lector.GetString(2),
-                lector.GetString(4),
-                lector.GetString(5),
-                lector.GetString(3)));
+            vehiculos.Add(new Vehiculo(lector.GetInt32(0),      // 0: Id
+                lector.GetString(1),      // 1: Placa
+                lector.GetString(2),      // 2: Cliente
+                lector.GetString(4),      // 4: Modelo
+                lector.GetString(5),      // 5: Dni
+                lector.GetString(3),      // 3: Telefono
+                lector.GetDateTime(6)     // 6: FechaRegistro
+                ));
         }
 
         return vehiculos;
@@ -53,8 +112,8 @@ public sealed class TallerRepository
     {
         const string sql =
             """
-            INSERT INTO dbo.Vehiculos (Placa, Cliente, Telefono, Modelo, Problema)
-            VALUES (@placa, @cliente, @telefono, @modelo, @problema);
+            INSERT INTO dbo.Vehiculos (Placa, Cliente, Telefono, Modelo, Dni, FechaRegistro)
+            VALUES (@placa, @cliente, @telefono, @modelo, @dni, @fechaRegistro);
             """;
 
         using var conexion = AbrirConexion();
@@ -63,9 +122,57 @@ public sealed class TallerRepository
         comando.Parameters.AddWithValue("@cliente", vehiculo.Cliente);
         comando.Parameters.AddWithValue("@telefono", vehiculo.Telefono);
         comando.Parameters.AddWithValue("@modelo", vehiculo.Modelo);
-        comando.Parameters.AddWithValue("@problema", vehiculo.Problema);
+        comando.Parameters.AddWithValue("@dni", vehiculo.Dni);
+
+        comando.Parameters.AddWithValue("@fechaRegistro", vehiculo.FechaRegistro);
         comando.ExecuteNonQuery();
     }
+
+    public void ActualizarVehiculo(Vehiculo vehiculo)
+    {
+        const string sql =
+            """
+            UPDATE dbo.Vehiculos
+            SET Cliente = @cliente,
+                Telefono = @telefono,
+                Modelo = @modelo,
+                Dni = @dni,
+                FechaRegistro = SYSDATETIME() -- Actualiza a la hora local actual de Lima
+            WHERE Placa = @placa;
+            """;
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.AddWithValue("@placa", vehiculo.Placa);
+        comando.Parameters.AddWithValue("@cliente", vehiculo.Cliente);
+        comando.Parameters.AddWithValue("@telefono", vehiculo.Telefono);
+        comando.Parameters.AddWithValue("@modelo", vehiculo.Modelo);
+        comando.Parameters.AddWithValue("@dni", vehiculo.Dni);
+
+        comando.ExecuteNonQuery();
+    }
+
+    // ----------------------------------------------------------
+    // METODO INYECTADO: ELIMINAR POR PLACA
+    // ----------------------------------------------------------
+    public void EliminarVehiculo(string placa)
+    {
+        const string sql =
+            """
+            DELETE FROM dbo.Vehiculos
+            WHERE Placa = @placa;
+            """;
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.AddWithValue("@placa", placa);
+
+        comando.ExecuteNonQuery();
+    }
+
+    // ==========================================
+    // MÉTODOS DE TRABAJOS
+    // ==========================================
 
     public IReadOnlyList<Trabajo> ObtenerTrabajos()
     {
@@ -138,6 +245,64 @@ public sealed class TallerRepository
         comando.Parameters.AddWithValue("@tiempoEstimadoMinutos", (int)trabajo.TiempoEstimado.TotalMinutes);
         comando.ExecuteNonQuery();
     }
+
+    public void ActualizarTrabajo(Trabajo trabajo)
+    {
+        const string sql =
+            """
+            UPDATE dbo.Trabajos
+            SET Placa = @placa,
+                Mecanico = @mecanico,
+                Descripcion = @descripcion,
+                Estado = @estado,
+                ServicioNombre = @servicioNombre,
+                PrecioBase = @precioBase,
+                TiempoBaseMinutos = @tiempoBaseMinutos,
+                CambioRefrigerante = @cambioRefrigerante,
+                CambioLiquidoFrenos = @cambioLiquidoFrenos,
+                CambioBujias = @cambioBujias,
+                TotalPagar = @totalPagar,
+                TiempoEstimadoMinutos = @tiempoEstimadoMinutos
+            WHERE Id = @id;
+            """;
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.AddWithValue("@id", trabajo.Id);
+        comando.Parameters.AddWithValue("@placa", trabajo.Placa);
+        comando.Parameters.AddWithValue("@mecanico", trabajo.Mecanico);
+        comando.Parameters.AddWithValue("@descripcion", trabajo.Descripcion);
+        comando.Parameters.AddWithValue("@estado", trabajo.Estado);
+        comando.Parameters.AddWithValue("@servicioNombre", trabajo.ServicioNombre);
+        comando.Parameters.AddWithValue("@precioBase", trabajo.PrecioBase);
+        comando.Parameters.AddWithValue("@tiempoBaseMinutos", (int)trabajo.TiempoBase.TotalMinutes);
+        comando.Parameters.AddWithValue("@cambioRefrigerante", trabajo.CambioRefrigerante);
+        comando.Parameters.AddWithValue("@cambioLiquidoFrenos", trabajo.CambioLiquidoFrenos);
+        comando.Parameters.AddWithValue("@cambioBujias", trabajo.CambioBujias);
+        comando.Parameters.AddWithValue("@totalPagar", trabajo.TotalPagar);
+        comando.Parameters.AddWithValue("@tiempoEstimadoMinutos", (int)trabajo.TiempoEstimado.TotalMinutes);
+
+        comando.ExecuteNonQuery();
+    }
+
+    public void EliminarTrabajo(int id)
+    {
+        const string sql =
+            """
+            DELETE FROM dbo.Trabajos
+            WHERE Id = @id;
+            """;
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.AddWithValue("@id", id);
+
+        comando.ExecuteNonQuery();
+    }
+
+    // ==========================================
+    // CONEXIÓN CENTRALIZADA
+    // ==========================================
 
     private static SqlConnection AbrirConexion()
     {

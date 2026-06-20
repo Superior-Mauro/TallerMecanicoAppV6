@@ -89,13 +89,27 @@ public static class TallerDbInitializer
                 Telefono      NVARCHAR(20)       NOT NULL CONSTRAINT DF_Vehiculos_Telefono DEFAULT (N''),
                 Modelo        NVARCHAR(80)       NOT NULL,
                 Dni           NVARCHAR(15)       NOT NULL CONSTRAINT DF_Vehiculos_Dni DEFAULT (N''),
+                Estado NVARCHAR(50) DEFAULT 'Pendiente',
                 FechaRegistro DATETIME2(0)       NOT NULL CONSTRAINT DF_Vehiculos_FechaRegistro DEFAULT (SYSUTCDATETIME()),
                 CONSTRAINT UQ_Vehiculos_Placa UNIQUE (Placa)
             );
         END
         """;
 
-        private const string ScriptTrabajos =
+    private const string ScriptImagenesVehiculos =
+        """
+        IF OBJECT_ID(N'dbo.ImagenesVehiculos', N'U') IS NULL
+        BEGIN
+            CREATE TABLE dbo.ImagenesVehiculos (
+                Id INT IDENTITY(1,1) PRIMARY KEY,
+                Placa VARCHAR(15) FOREIGN KEY REFERENCES dbo.Vehiculos(Placa) ON DELETE CASCADE,
+                Foto VARBINARY(MAX) NOT NULL,
+                FechaCarga DATETIME DEFAULT GETDATE()
+            );
+        END
+        """;
+
+    private const string ScriptTrabajos =
             """
         IF OBJECT_ID(N'dbo.Trabajos', N'U') IS NULL
         BEGIN

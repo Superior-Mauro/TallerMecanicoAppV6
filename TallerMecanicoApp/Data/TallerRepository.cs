@@ -21,8 +21,8 @@ public sealed class TallerRepository
 
         using var conexion = AbrirConexion();
         using var comando = new SqlCommand(sql, conexion);
-        comando.Parameters.AddWithValue("@usuario", usuario);
-        comando.Parameters.AddWithValue("@contrasena", contrasena);
+        comando.Parameters.Add("@usuario", System.Data.SqlDbType.NVarChar).Value = usuario.Trim();
+        comando.Parameters.Add("@contrasena", System.Data.SqlDbType.NVarChar).Value = contrasena.Trim();
 
         int resultado = Convert.ToInt32(comando.ExecuteScalar());
         return resultado > 0;
@@ -324,7 +324,7 @@ public sealed class TallerRepository
     {
         const string sql =
             """
-            INSERT INTO dbo.VehiculosImagenes (Placa, DatosImagen, FechaRegistro)
+            INSERT INTO dbo.VehiculosImagenes (Placa, datosImagen, FechaRegistro)
             VALUES (@placa, @datosImagen, SYSDATETIME());
             """;
 
@@ -341,7 +341,7 @@ public sealed class TallerRepository
     {
         const string sql =
             """
-            SELECT DatosImagen
+            SELECT datosImagen
             FROM dbo.VehiculosImagenes
             WHERE Placa = @placa
             ORDER BY Id ASC;

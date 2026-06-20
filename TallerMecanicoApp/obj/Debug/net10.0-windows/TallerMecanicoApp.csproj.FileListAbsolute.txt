@@ -15,7 +15,6 @@ C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMecanicoApp.Form1.resources
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMecanicoApp.Form2.resources
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMecanicoApp.csproj.GenerateResource.cache
-C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\obj\Debug\net10.0-windows\TallerMecanicoApp.sourcelink.json
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\bin\Debug\net10.0-windows\appsettings.json
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\bin\Debug\net10.0-windows\Azure.Core.dll
 C:\Users\User\Downloads\TallerMecanicoAplicacion\TallerMecanicoApp\bin\Debug\net10.0-windows\Azure.Identity.dll

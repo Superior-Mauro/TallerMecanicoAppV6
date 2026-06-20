@@ -65,12 +65,27 @@ public sealed class TallerRepository
 
     public IReadOnlyList<Vehiculo> ObtenerVehiculos()
     {
+        // Esta consulta trae todos los datos del vehículo más el estado de su TRABAJO MÁS RECIENTE
         const string sql =
             """
-            SELECT Id, Placa, Cliente, Telefono, Modelo, Dni, FechaRegistro
-            FROM dbo.Vehiculos
-            ORDER BY FechaRegistro DESC, Id DESC;
-            """;
+        SELECT 
+            v.Id, 
+            v.Placa, 
+            v.Cliente, 
+            v.Telefono, 
+            v.Modelo, 
+            v.Dni, 
+            v.FechaRegistro,
+            ISNULL(t.Estado, 'Sin Trabajos') AS Estado
+        FROM dbo.Vehiculos v
+        OUTER APPLY (
+            SELECT TOP 1 t.Estado
+            FROM dbo.Trabajos t
+            WHERE t.Placa = v.Placa
+            ORDER BY t.FechaRegistro DESC, t.Id DESC
+        ) t
+        ORDER BY v.FechaRegistro DESC, v.Id DESC;
+        """;
 
         var vehiculos = new List<Vehiculo>();
 
@@ -80,14 +95,16 @@ public sealed class TallerRepository
 
         while (lector.Read())
         {
-            vehiculos.Add(new Vehiculo(lector.GetInt32(0),      // 0: Id
-                lector.GetString(1),      // 1: Placa
-                lector.GetString(2),      // 2: Cliente
-                lector.GetString(4),      // 4: Modelo
-                lector.GetString(5),      // 5: Dni
-                lector.GetString(3),      // 3: Telefono
-                lector.GetDateTime(6)     // 6: FechaRegistro
-                ));
+            vehiculos.Add(new Vehiculo(
+                lector.GetInt32(0),      // Id
+                lector.GetString(1),   // Placa
+                lector.GetString(2),   // Cliente
+                lector.GetString(4),   // Modelo
+                lector.GetString(5),   // Dni
+                lector.GetString(3),   // Telefono
+                lector.GetDateTime(6),  // FechaRegistro
+                lector.GetString(7)    // Estado (NUEVO)
+            ));
         }
 
         return vehiculos;
@@ -123,7 +140,6 @@ public sealed class TallerRepository
         comando.Parameters.AddWithValue("@telefono", vehiculo.Telefono);
         comando.Parameters.AddWithValue("@modelo", vehiculo.Modelo);
         comando.Parameters.AddWithValue("@dni", vehiculo.Dni);
-
         comando.Parameters.AddWithValue("@fechaRegistro", vehiculo.FechaRegistro);
         comando.ExecuteNonQuery();
     }
@@ -298,6 +314,53 @@ public sealed class TallerRepository
         comando.Parameters.AddWithValue("@id", id);
 
         comando.ExecuteNonQuery();
+    }
+
+    // ============================================================
+    // MÉTODOS PARA GALERÍA DE IMÁGENES MÚLTIPLES
+    // ============================================================
+
+    public void GuardarImagenVehiculo(string placa, byte[] imagenBytes)
+    {
+        const string sql =
+            """
+            INSERT INTO dbo.VehiculosImagenes (Placa, DatosImagen, FechaRegistro)
+            VALUES (@placa, @datosImagen, SYSDATETIME());
+            """;
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+
+        comando.Parameters.Add("@placa", System.Data.SqlDbType.NVarChar, 15).Value = placa;
+        comando.Parameters.Add("@datosImagen", System.Data.SqlDbType.VarBinary, -1).Value = imagenBytes;
+
+        comando.ExecuteNonQuery();
+    }
+
+    public IReadOnlyList<byte[]> ObtenerImagenesPorPlaca(string placa)
+    {
+        const string sql =
+            """
+            SELECT DatosImagen
+            FROM dbo.VehiculosImagenes
+            WHERE Placa = @placa
+            ORDER BY Id ASC;
+            """;
+
+        var imagenes = new List<byte[]>();
+
+        using var conexion = AbrirConexion();
+        using var comando = new SqlCommand(sql, conexion);
+        comando.Parameters.Add("@placa", System.Data.SqlDbType.NVarChar, 15).Value = placa;
+
+        using var lector = comando.ExecuteReader();
+        while (lector.Read())
+        {
+            byte[] buffer = (byte[])lector["DatosImagen"];
+            imagenes.Add(buffer);
+        }
+
+        return imagenes;
     }
 
     // ==========================================

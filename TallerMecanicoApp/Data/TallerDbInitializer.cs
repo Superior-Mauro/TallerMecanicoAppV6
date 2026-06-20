@@ -27,6 +27,9 @@ public static class TallerDbInitializer
         EjecutarScript(conexion, ScriptVehiculos);
         EjecutarScript(conexion, ScriptTrabajos);
         EjecutarScript(conexion, ScriptColumnasAdicionales);
+        EjecutarScript(conexion, ScriptTablaHistorial);
+        EjecutarScript(conexion, ScriptTriggerFinalizados);
+        EjecutarScript(conexion, ScriptTablaImagenes);
     }
 
     private static void CrearBaseSiNoExiste(string cadenaMaster, string nombreBase)
@@ -134,4 +137,88 @@ public static class TallerDbInitializer
             ADD Mecanico NVARCHAR(120) NOT NULL CONSTRAINT DF_Trabajos_Mecanico DEFAULT (N'Sin asignar') WITH VALUES;
         END
         """;
+
+
+    // ============================================================
+    // SCRIPT NUEVO: TABLA AUDITORÍA / HISTORIAL DE FINALIZADOS
+    // ============================================================
+    private const string ScriptTablaHistorial =
+        """
+        IF OBJECT_ID(N'dbo.HistorialServiciosFinalizados', N'U') IS NULL
+        BEGIN
+            CREATE TABLE dbo.HistorialServiciosFinalizados
+            (
+                IdHistorial      INT IDENTITY(1, 1) NOT NULL CONSTRAINT PK_HistorialServicios PRIMARY KEY,
+                Placa            NVARCHAR(15)       NOT NULL,
+                Estado           NVARCHAR(30)       NOT NULL,
+                Dni              NVARCHAR(15)       NOT NULL,
+                Telefono         NVARCHAR(20)       NOT NULL,
+                Cliente          NVARCHAR(120)      NOT NULL,
+                Modelo           NVARCHAR(80)       NOT NULL,
+                Mecanico         NVARCHAR(120)      NOT NULL,
+                HoraDeFinalizado DATETIME2(0)       NOT NULL CONSTRAINT DF_Historial_HoraDeFinalizado DEFAULT (SYSDATETIME())
+            );
+        END
+        """;
+
+    // ============================================================
+    // SCRIPT NUEVO: TRIGGER AUTOMÁTICO EN C# (Mapeado a tus tablas)
+    // ============================================================
+    private const string ScriptTriggerFinalizados =
+        """
+        IF NOT EXISTS (SELECT * FROM sys.triggers WHERE name = 'TR_TrabajoFinalizado')
+        BEGIN
+            EXEC('
+                CREATE TRIGGER dbo.TR_TrabajoFinalizado
+                ON dbo.Trabajos
+                AFTER UPDATE
+                AS
+                BEGIN
+                    SET NOCOUNT ON;
+
+                    -- Evaluamos si cambió el estado y su nuevo valor es Finalizado
+                    IF UPDATE(Estado)
+                    BEGIN
+                        INSERT INTO dbo.HistorialServiciosFinalizados 
+                        (
+                            Placa, Estado, Dni, Telefono, Cliente, Modelo, Mecanico, HoraDeFinalizado
+                        )
+                        SELECT 
+                            i.Placa,
+                            i.Estado,
+                            v.Dni,
+                            v.Telefono,
+                            v.Cliente,
+                            v.Modelo,
+                            i.Mecanico,
+                            SYSDATETIME()
+                        FROM inserted i
+                        INNER JOIN deleted d ON i.Id = d.Id
+                        INNER JOIN dbo.Vehiculos v ON i.Placa = v.Placa
+                        WHERE i.Estado = ''Finalizado'' 
+                          AND (d.Estado IS NULL OR d.Estado <> ''Finalizado'');
+                    END
+                END
+            ');
+        END
+        """;
+
+    // SCRIPT NUEVO: TABLA RELACIONAL PARA IMÁGENES MÚLTIPLES POR PLACA
+    private const string ScriptTablaImagenes =
+        """
+        IF OBJECT_ID(N'dbo.VehiculosImagenes', N'U') IS NULL
+        BEGIN
+            CREATE TABLE dbo.VehiculosImagenes
+            (
+                Id            INT IDENTITY(1, 1) NOT NULL CONSTRAINT PK_VehiculosImagenes PRIMARY KEY,
+                Placa         NVARCHAR(15)       NOT NULL,
+                DatosImagen   VARBINARY(MAX)     NOT NULL, -- Aloja los bytes reales comprimidos de la foto
+                FechaRegistro DATETIME2(0)       NOT NULL CONSTRAINT DF_VehiculosImagenes_Fecha DEFAULT (SYSUTCDATETIME()),
+                
+                -- Si eliminas el vehículo con el botón Delete, se limpian sus fotos en cascada automáticamente
+                CONSTRAINT FK_Imagenes_Vehiculos FOREIGN KEY (Placa) REFERENCES dbo.Vehiculos (Placa) ON DELETE CASCADE
+            );
+        END
+        """;
+
 }

@@ -3,11 +3,11 @@ namespace TallerMecanicoApp.Models;
 public class Vehiculo
 {
     public Vehiculo(string placa, string cliente, string modelo, string dni, string telefono = "")
-        : this(0, placa, cliente, modelo, dni, telefono, DateTime.Now)
+        : this(0, placa, cliente, modelo, dni, telefono, DateTime.Now, "Sin Trabajos")
     {
     }
 
-    public Vehiculo(int id, string placa, string cliente, string modelo, string dni, string telefono, DateTime fechaRegistro)
+    public Vehiculo(int id, string placa, string cliente, string modelo, string dni, string telefono, DateTime fechaRegistro, string estado)
     {
         Id = id;
         Placa = placa;
@@ -16,6 +16,7 @@ public class Vehiculo
         Dni = dni; // <-- CAMBIADO
         Telefono = telefono;
         FechaRegistro = fechaRegistro; // <-- NUEVA PROPIEDAD ASIGNADA
+        Estado = string.IsNullOrWhiteSpace(estado) ? "Sin Trabajos" : estado; // Por si es nuevo
     }
 
     public int Id { get; set; }
@@ -25,4 +26,5 @@ public class Vehiculo
     public string Dni { get; set; } // <-- CAMBIADO
     public string Telefono { get; set; }
     public DateTime FechaRegistro { get; set; }
+    public string Estado { get; set; }
 }

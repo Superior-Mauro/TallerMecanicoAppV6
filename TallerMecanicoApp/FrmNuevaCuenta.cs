@@ -13,6 +13,8 @@ public partial class FrmNuevaCuenta : Form
     public FrmNuevaCuenta()
     {
         InitializeComponent();
+
+        this.AcceptButton = btnCrear;
     }
 
     // ==========================================
